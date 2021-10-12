@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import androidx.customview.view.AbsSavedState
 import androidx.recyclerview.widget.RecyclerView
@@ -98,7 +99,10 @@ class LinemanHorizontalScrollBar @JvmOverloads constructor(
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 // The total width of the whole, pay attention to the whole, including the outside of the display area.
-                val range = recyclerView.computeHorizontalScrollRange() + recyclerView.paddingStart + recyclerView.paddingEnd
+                val paddingStart = recyclerView.paddingStart
+                val paddingEnd = recyclerView.paddingEnd
+                val range = recyclerView.computeHorizontalScrollRange()
+                val rangeWithPadding = range + paddingStart + paddingEnd
                 // The current offset of thumb
                 val offset = recyclerView.computeHorizontalScrollOffset()
                 // Screen width of device
@@ -106,21 +110,23 @@ class LinemanHorizontalScrollBar @JvmOverloads constructor(
                 // Calculate the width of the scroll bar
                 val transMaxRange = (scrollBarTrack.width - scrollBarThumb.width).toFloat()
                 // Calculate new offset of scroll bar
-                val transX = offset * transMaxRange / (range - screenWidth)
+                val transX = offset * transMaxRange / (rangeWithPadding - screenWidth)
                 transThumbX = if (transX > transMaxRange) transMaxRange else transX
 
                 // Log values for maintenance
                 Log.i("Nakharin", "range: $range")
-//                Log.i("Nakharin", "screenWidth: $screenWidth")
-//                Log.i("Nakharin", "transMaxRange: $transMaxRange")
-//                Log.i("Nakharin", "transX: $transX")
-//                Log.i("Nakharin", "transThumbX: $transThumbX")
-//                Log.d("Nakharin", "--------------------------------------")
+                Log.i("Nakharin", "rangeWithPadding: $rangeWithPadding")
+                Log.i("Nakharin", "offset: $offset")
+                Log.i("Nakharin", "screenWidth: $screenWidth")
+                Log.i("Nakharin", "transMaxRange: $transMaxRange")
+                Log.i("Nakharin", "transX: $transX")
+                Log.i("Nakharin", "transThumbX: $transThumbX")
+                Log.d("Nakharin", "--------------------------------------")
 
                 // Set translationX to scroll bar thumb
                 scrollBarThumb.translationX = transThumbX
                 // Check can scroll horizontal
-//                if (maxEndX <= 0) scrollBarContainer.gone() else scrollBarContainer.visible()
+                if (rangeWithPadding < screenWidth) scrollBarContainer.visibility = View.GONE else scrollBarContainer.visibility = View.VISIBLE
 
                 super.onScrolled(recyclerView, dx, dy)
             }
