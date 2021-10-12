@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/linemanIconRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingTop="25dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        tools:itemCount="8"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:listitem="@layout/list_entry_icon_collection_section"
+        tools:spanCount="4" />
+
+    <com.example.horizontalscrollbar.LinemanHorizontalScrollBar
+        android:id="@+id/linemanHorizontalScrollBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:linemanHorizontalScrollBar_cornerRadius="3dp"
+        app:linemanHorizontalScrollBar_size="6dp"
+        app:linemanHorizontalScrollBar_thumbColor="@color/teal_200"
+        app:linemanHorizontalScrollBar_thumbWidth="16dp"
+        app:linemanHorizontalScrollBar_trackColor="@color/teal_700"
+        app:linemanHorizontalScrollBar_trackWidth="64dp" />
+
+</LinearLayout>

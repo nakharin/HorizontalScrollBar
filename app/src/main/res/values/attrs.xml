@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Widgets -->
+    <declare-styleable name="LinemanHorizontalScrollBar">
+        <attr name="linemanHorizontalScrollBar_size" format="dimension" />
+        <attr name="linemanHorizontalScrollBar_cornerRadius" format="dimension" />
+
+        <attr name="linemanHorizontalScrollBar_trackWidth" format="dimension" />
+        <attr name="linemanHorizontalScrollBar_trackColor" format="color" />
+
+        <attr name="linemanHorizontalScrollBar_thumbWidth" format="dimension" />
+        <attr name="linemanHorizontalScrollBar_thumbColor" format="color" />
+    </declare-styleable>
+
+</resources>
