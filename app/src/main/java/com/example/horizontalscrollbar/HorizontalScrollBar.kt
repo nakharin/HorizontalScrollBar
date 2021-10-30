@@ -10,10 +10,11 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.customview.view.AbsSavedState
 import androidx.recyclerview.widget.RecyclerView
-import com.example.horizontalscrollbar.databinding.ViewgroupLinemanHorizontalScrollBarBinding
+import com.example.horizontalscrollbar.databinding.ViewgroupHorizontalScrollBarBinding
 import com.google.android.material.card.MaterialCardView
+import kotlin.math.max
 
-class LinemanHorizontalScrollBar @JvmOverloads constructor(
+class HorizontalScrollBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -42,26 +43,27 @@ class LinemanHorizontalScrollBar @JvmOverloads constructor(
 
     // Variable
     private var transThumbX: Float = 0f
+    private var maxRange = 0
 
     private fun inflateView(context: Context) {
-        val binding = ViewgroupLinemanHorizontalScrollBarBinding.inflate(LayoutInflater.from(context), this, true)
+        val binding = ViewgroupHorizontalScrollBarBinding.inflate(LayoutInflater.from(context), this, true)
         findView(binding)
     }
 
-    private fun findView(binding: ViewgroupLinemanHorizontalScrollBarBinding) {
+    private fun findView(binding: ViewgroupHorizontalScrollBarBinding) {
         scrollBarContainer = binding.linemanHorizontalScrollBarContainer
         scrollBarTrack = binding.linemanHorizontalScrollBarTrack
         scrollBarThumb = binding.linemanHorizontalScrollBarThumb
     }
 
     private fun setupStyleables(attrs: AttributeSet) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.LinemanHorizontalScrollBar)
-        size = typedArray.getDimension(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_size, 0f)
-        cornerRadius = typedArray.getDimension(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_cornerRadius, 0f)
-        trackWidth = typedArray.getDimension(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_trackWidth, 0f)
-        trackColor = typedArray.getColor(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_trackColor, 0)
-        thumbWidth = typedArray.getDimension(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_thumbWidth, 0f)
-        thumbColor = typedArray.getColor(R.styleable.LinemanHorizontalScrollBar_linemanHorizontalScrollBar_thumbColor, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HorizontalScrollBar)
+        size = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_size, 0f)
+        cornerRadius = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_cornerRadius, 0f)
+        trackWidth = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_trackWidth, 0f)
+        trackColor = typedArray.getColor(R.styleable.HorizontalScrollBar_horizontalScrollBar_trackColor, 0)
+        thumbWidth = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_thumbWidth, 0f)
+        thumbColor = typedArray.getColor(R.styleable.HorizontalScrollBar_horizontalScrollBar_thumbColor, 0)
         typedArray.recycle()
     }
 
@@ -102,7 +104,10 @@ class LinemanHorizontalScrollBar @JvmOverloads constructor(
                 val paddingStart = recyclerView.paddingStart
                 val paddingEnd = recyclerView.paddingEnd
                 val range = recyclerView.computeHorizontalScrollRange()
-                val rangeWithPadding = range + paddingStart + paddingEnd
+                if (maxRange < range) {
+                    maxRange = range
+                }
+                val rangeWithPadding = max(maxRange + paddingStart + paddingEnd, 0)
                 // The current offset of thumb
                 val offset = recyclerView.computeHorizontalScrollOffset()
                 // Screen width of device
@@ -114,7 +119,7 @@ class LinemanHorizontalScrollBar @JvmOverloads constructor(
                 transThumbX = if (transX > transMaxRange) transMaxRange else transX
 
                 // Log values for maintenance
-                Log.i("Nakharin", "range: $range")
+                Log.i("Nakharin", "maxRange: $maxRange")
                 Log.i("Nakharin", "rangeWithPadding: $rangeWithPadding")
                 Log.i("Nakharin", "offset: $offset")
                 Log.i("Nakharin", "screenWidth: $screenWidth")

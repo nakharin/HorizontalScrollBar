@@ -14,7 +14,7 @@ class IconCollectionSectionViewHolder(private val binding: ListEntryIconCollecti
         if (model == null) return
 
         binding.apply {
-            tvIconCollectionSection.text = model.name
+            tvIconCollectionSection.text = "[$position] ${model.name}"
             ivIconCollectionSection.load(model.imageUrl)
         }
 
