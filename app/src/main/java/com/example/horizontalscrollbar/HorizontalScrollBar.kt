@@ -12,7 +12,6 @@ import androidx.customview.view.AbsSavedState
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizontalscrollbar.databinding.ViewgroupHorizontalScrollBarBinding
 import com.google.android.material.card.MaterialCardView
-import kotlin.math.max
 
 class HorizontalScrollBar @JvmOverloads constructor(
     context: Context,
@@ -31,19 +30,13 @@ class HorizontalScrollBar @JvmOverloads constructor(
     private lateinit var scrollBarTrack: MaterialCardView
     private lateinit var scrollBarThumb: MaterialCardView
 
-    // Style
-    private var size: Float = 0f
     private var cornerRadius: Float = 0f
-
-    private var trackWidth: Float = 0f
     private var trackColor: Int = 0
 
     private var thumbWidth: Float = 0f
     private var thumbColor: Int = 0
 
-    // Variable
-    private var transThumbX: Float = 0f
-    private var maxRange = 0
+    private var xThumbPosition: Float = 0f
 
     private fun inflateView(context: Context) {
         val binding = ViewgroupHorizontalScrollBarBinding.inflate(LayoutInflater.from(context), this, true)
@@ -58,9 +51,7 @@ class HorizontalScrollBar @JvmOverloads constructor(
 
     private fun setupStyleables(attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HorizontalScrollBar)
-        size = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_size, 0f)
         cornerRadius = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_cornerRadius, 0f)
-        trackWidth = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_trackWidth, 0f)
         trackColor = typedArray.getColor(R.styleable.HorizontalScrollBar_horizontalScrollBar_trackColor, 0)
         thumbWidth = typedArray.getDimension(R.styleable.HorizontalScrollBar_horizontalScrollBar_thumbWidth, 0f)
         thumbColor = typedArray.getColor(R.styleable.HorizontalScrollBar_horizontalScrollBar_thumbColor, 0)
@@ -68,18 +59,10 @@ class HorizontalScrollBar @JvmOverloads constructor(
     }
 
     private fun setupView() {
-        if (size != 0f) {
-            scrollBarTrack.layoutParams.height = size.toInt()
-            scrollBarThumb.layoutParams.height = size.toInt()
-        }
 
         if (cornerRadius != 0f) {
             scrollBarTrack.radius = cornerRadius
             scrollBarThumb.radius = cornerRadius
-        }
-
-        if (trackWidth != 0f) {
-            scrollBarTrack.layoutParams.width = trackWidth.toInt()
         }
 
         if (trackColor != 0) {
@@ -94,45 +77,34 @@ class HorizontalScrollBar @JvmOverloads constructor(
             scrollBarThumb.setCardBackgroundColor(thumbColor)
         }
 
-        scrollBarThumb.translationX = transThumbX
+        scrollBarThumb.translationX = xThumbPosition
     }
 
     fun attachToRecyclerView(recyclerView: RecyclerView) {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            private var maxScrollRange = Int.MAX_VALUE
+            private var xScrollPosition = 0
+            private val paddingStart = recyclerView.paddingStart
+            private val paddingEnd = recyclerView.paddingEnd
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                // The total width of the whole, pay attention to the whole, including the outside of the display area.
-                val paddingStart = recyclerView.paddingStart
-                val paddingEnd = recyclerView.paddingEnd
-                val range = recyclerView.computeHorizontalScrollRange()
-                if (maxRange < range) {
-                    maxRange = range
+                xScrollPosition += dx
+                maxScrollRange = maxScrollRange.coerceAtMost(recyclerView.computeHorizontalScrollRange())
+                val totalPadding = paddingStart + paddingEnd
+                val totalArea = maxScrollRange + totalPadding
+                val viewWidth = recyclerView.measuredWidth
+                if (totalArea <= viewWidth) {
+                    scrollBarContainer.visibility = View.GONE
+                    return
+                } else {
+                    scrollBarContainer.visibility = View.VISIBLE
                 }
-                val rangeWithPadding = max(maxRange + paddingStart + paddingEnd, 0)
-                // The current offset of thumb
-                val offset = recyclerView.computeHorizontalScrollOffset()
-                // Screen width of device
-                val screenWidth = context.resources.displayMetrics.widthPixels
-                // Calculate the width of the scroll bar
-                val transMaxRange = (scrollBarTrack.width - scrollBarThumb.width).toFloat()
-                // Calculate new offset of scroll bar
-                val transX = offset * transMaxRange / (rangeWithPadding - screenWidth)
-                transThumbX = if (transX > transMaxRange) transMaxRange else transX
-
-                // Log values for maintenance
-                Log.i("Nakharin", "maxRange: $maxRange")
-                Log.i("Nakharin", "rangeWithPadding: $rangeWithPadding")
-                Log.i("Nakharin", "offset: $offset")
-                Log.i("Nakharin", "screenWidth: $screenWidth")
-                Log.i("Nakharin", "transMaxRange: $transMaxRange")
-                Log.i("Nakharin", "transX: $transX")
-                Log.i("Nakharin", "transThumbX: $transThumbX")
-                Log.d("Nakharin", "--------------------------------------")
-
-                // Set translationX to scroll bar thumb
-                scrollBarThumb.translationX = transThumbX
-                // Check can scroll horizontal
-                if (rangeWithPadding < screenWidth) scrollBarContainer.visibility = View.GONE else scrollBarContainer.visibility = View.VISIBLE
-
+                val scrollExtent = recyclerView.computeHorizontalScrollExtent()
+                val maxThumbRange = scrollBarTrack.measuredWidth - scrollBarThumb.measuredWidth
+                val scrollableAreaWidth = totalArea - (scrollExtent + totalPadding)
+                xThumbPosition = (xScrollPosition.toFloat() * maxThumbRange) / scrollableAreaWidth
+                scrollBarThumb.translationX = xThumbPosition
                 super.onScrolled(recyclerView, dx, dy)
             }
         })
@@ -142,13 +114,11 @@ class HorizontalScrollBar @JvmOverloads constructor(
         val superState: Parcelable? = super.onSaveInstanceState()
         superState?.let {
             val state = SavedState(superState)
-            state.size = this.size
             state.cornerRadius = this.cornerRadius
-            state.trackWidth = this.trackWidth
             state.trackColor = this.trackColor
             state.thumbWidth = this.thumbWidth
             state.thumbColor = this.thumbColor
-            state.transThumbX = this.transThumbX
+            state.xThumbPosition = this.xThumbPosition
             return state
         } ?: run {
             return superState
@@ -159,13 +129,11 @@ class HorizontalScrollBar @JvmOverloads constructor(
         when (state) {
             is SavedState -> {
                 super.onRestoreInstanceState(state.superState)
-                this.size = state.size
                 this.cornerRadius = state.cornerRadius
-                this.trackWidth = state.trackWidth
                 this.trackColor = state.trackColor
                 this.thumbWidth = state.thumbWidth
                 this.thumbColor = state.thumbColor
-                this.transThumbX = state.transThumbX
+                this.xThumbPosition = state.xThumbPosition
                 setupView()
             }
             else -> {
@@ -176,38 +144,28 @@ class HorizontalScrollBar @JvmOverloads constructor(
 
     internal class SavedState : AbsSavedState {
 
-        var size: Float = 0f
         var cornerRadius: Float = 0f
-        var trackWidth: Float = 0f
         var trackColor: Int = 0
         var thumbWidth: Float = 0f
         var thumbColor: Int = 0
-        var endX: Float = 0f
-        var transThumbX: Float = 0f
+        var xThumbPosition: Float = 0f
 
         constructor(superState: Parcelable) : super(superState)
 
         constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
-            size = source.readFloat()
             cornerRadius = source.readFloat()
-            trackWidth = source.readFloat()
             trackColor = source.readInt()
             thumbWidth = source.readFloat()
             thumbColor = source.readInt()
-            endX = source.readFloat()
-            transThumbX = source.readFloat()
+            xThumbPosition = source.readFloat()
         }
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
-            out.writeFloat(size)
             out.writeFloat(cornerRadius)
-            out.writeFloat(trackWidth)
             out.writeInt(trackColor)
             out.writeFloat(thumbWidth)
             out.writeInt(thumbColor)
-            out.writeFloat(endX)
-            out.writeFloat(transThumbX)
         }
 
         companion object {

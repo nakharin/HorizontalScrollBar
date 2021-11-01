@@ -27,26 +27,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val listIconOf = listOf(
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-//            IconCollectionSectionUiModel(id = "1", name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300"),
-        )
-        iconCollectionSectionAdapter.addItems(listIconOf)
+
+        val icons = (0..200).mapIndexed { index, _ ->
+            IconCollectionSectionUiModel(id = index.toString(), name = "0 THB Delivery Fee", imageUrl = "https://picsum.photos/200/300")
+        }
+        iconCollectionSectionAdapter.addItems(icons)
     }
 }

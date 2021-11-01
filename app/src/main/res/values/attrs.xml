@@ -3,10 +3,8 @@
 
     <!-- Widgets -->
     <declare-styleable name="HorizontalScrollBar">
-        <attr name="horizontalScrollBar_size" format="dimension" />
         <attr name="horizontalScrollBar_cornerRadius" format="dimension" />
 
-        <attr name="horizontalScrollBar_trackWidth" format="dimension" />
         <attr name="horizontalScrollBar_trackColor" format="color" />
 
         <attr name="horizontalScrollBar_thumbWidth" format="dimension" />

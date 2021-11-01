@@ -24,14 +24,12 @@
 
     <com.example.horizontalscrollbar.HorizontalScrollBar
         android:id="@+id/horizontalScrollBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="64dp"
+        android:layout_height="6dp"
         android:layout_gravity="center_horizontal"
         app:horizontalScrollBar_cornerRadius="3dp"
-        app:horizontalScrollBar_size="6dp"
         app:horizontalScrollBar_thumbColor="@color/teal_200"
         app:horizontalScrollBar_thumbWidth="16dp"
-        app:horizontalScrollBar_trackColor="@color/teal_700"
-        app:horizontalScrollBar_trackWidth="64dp" />
+        app:horizontalScrollBar_trackColor="@color/teal_700" />
 
 </LinearLayout>
