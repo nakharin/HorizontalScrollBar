@@ -84,12 +84,10 @@ class HorizontalScrollBar @JvmOverloads constructor(
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             private var maxScrollRange = 0
-            private var xScrollPosition = 0
             private val paddingStart = recyclerView.paddingStart
             private val paddingEnd = recyclerView.paddingEnd
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                xScrollPosition += dx
                 maxScrollRange = maxScrollRange.coerceAtLeast(recyclerView.computeHorizontalScrollRange())
                 val totalPadding = paddingStart + paddingEnd
                 val totalArea = maxScrollRange + totalPadding
