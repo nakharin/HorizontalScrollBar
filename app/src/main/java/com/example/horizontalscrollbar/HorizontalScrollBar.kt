@@ -83,14 +83,14 @@ class HorizontalScrollBar @JvmOverloads constructor(
     fun attachToRecyclerView(recyclerView: RecyclerView) {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-            private var maxScrollRange = Int.MAX_VALUE
+            private var maxScrollRange = 0
             private var xScrollPosition = 0
             private val paddingStart = recyclerView.paddingStart
             private val paddingEnd = recyclerView.paddingEnd
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 xScrollPosition += dx
-                maxScrollRange = maxScrollRange.coerceAtMost(recyclerView.computeHorizontalScrollRange())
+                maxScrollRange = maxScrollRange.coerceAtLeast(recyclerView.computeHorizontalScrollRange())
                 val totalPadding = paddingStart + paddingEnd
                 val totalArea = maxScrollRange + totalPadding
                 val viewWidth = recyclerView.measuredWidth
@@ -100,10 +100,13 @@ class HorizontalScrollBar @JvmOverloads constructor(
                 } else {
                     scrollBarContainer.visibility = View.VISIBLE
                 }
-                val scrollExtent = recyclerView.computeHorizontalScrollExtent()
-                val maxThumbRange = scrollBarTrack.measuredWidth - scrollBarThumb.measuredWidth
-                val scrollableAreaWidth = totalArea - (scrollExtent + totalPadding)
-                xThumbPosition = (xScrollPosition.toFloat() * maxThumbRange) / scrollableAreaWidth
+
+                val scrollableRange = maxScrollRange - recyclerView.computeHorizontalScrollExtent()
+                val currentScrollPosition = recyclerView.computeHorizontalScrollOffset()
+                val scrollAdjustRatio = maxScrollRange.toFloat() / recyclerView.computeHorizontalScrollRange()
+                val currentScrollRatio = currentScrollPosition.toFloat() / scrollableRange.toFloat() * scrollAdjustRatio
+                val thumbRange = scrollBarTrack.measuredWidth - scrollBarThumb.measuredWidth
+                xThumbPosition = thumbRange * currentScrollRatio
                 scrollBarThumb.translationX = xThumbPosition
                 super.onScrolled(recyclerView, dx, dy)
             }
